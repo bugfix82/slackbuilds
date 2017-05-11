@@ -1,0 +1,16 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|' on
+# the right side marks the last column you can put a character in.  You must make
+# exactly 11 lines for the formatting to be correct.  It's also customary to
+# leave one space after the ':'.
+
+       |-----handy-ruler------------------------------------------------------|
+diamond: diamond
+diamond:
+diamond: Diamond is a python daemon that collects system metrics and publishes
+diamond: them to Graphite or other supported handlers. It is capable of
+diamond: collecting cpu, memory, network, i/o, load and disk metrics.
+diamond: Additionally, it features an API for implementing custom collectors
+diamond: for gathering metrics from almost any source.
+diamond: 

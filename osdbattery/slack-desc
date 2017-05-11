@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|' on
+# the right side marks the last column you can put a character in.  You must make
+# exactly 11 lines for the formatting to be correct.  It's also customary to
+# leave one space after the ':'.
+
+          |-----handy-ruler------------------------------------------------------|
+osdbattery: osdbattery
+osdbattery:
+osdbattery: osdbatery is a simple application which shows battery info for
+osdbattery: laptops. This program parses ACPI kernel info and shows it in an
+osdbattery: on-screen display. It is very useful for notebooks when using full
+osdbattery: screen applications, since it allows you to monitor your battery
+osdbattery: state in all applications. It shows a status bar, the percentage of
+osdbattery: battery power left, and maximum, minimum, and current voltage. It has
+osdbattery: a configuration file to specify placement on the desktop, font,
+osdbattery: color, and update interval.
+osdbattery:

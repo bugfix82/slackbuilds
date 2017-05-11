@@ -1,0 +1,41 @@
+config() {
+	NEW=$1
+	OLD="`dirname $NEW`/`basename $NEW .new`"
+	# If there's no config file by that name, mv it over:
+	if [ ! -r $OLD ]; then
+	mv $NEW $OLD
+	elif [ "`cat $OLD | md5sum`" = "`cat $NEW | md5sum`" ]; then # toss the redundant copy
+	rm $NEW
+	fi
+	# Otherwise, we leave the .new copy for the admin to consider...
+}
+
+username="jabberd"
+groupname="daemon"
+
+# Keep same perms on rc.jabberd.new:
+if [ -e etc/rc.d/rc.jabberd ]; then
+  cp -a etc/rc.d/rc.jabberd etc/rc.d/rc.jabberd.new.incoming
+  cat etc/rc.d/rc.jabberd.new > etc/rc.d/rc.jabberd.new.incoming
+  mv etc/rc.d/rc.jabberd.new.incoming etc/rc.d/rc.jabberd.new
+fi
+
+config etc/jabberd/router-users.xml.new
+config etc/jabberd/c2s.xml.new
+config etc/jabberd/init/jabberd-router.conf.new
+config etc/jabberd/router-filter.xml.new
+config etc/jabberd/init/jabberd-s2s.conf.new
+config etc/jabberd/jabberd.cfg.new
+config etc/jabberd/init/jabberd-c2s.conf.new
+config etc/jabberd/s2s.xml.new
+config etc/jabberd/init/jabberd-sm.conf.new
+config etc/jabberd/router.xml.new
+config etc/jabberd/sm.xml.new
+config etc/jabberd/templates/roster.xml.new
+config etc/rc.d/rc.jabberd.new
+
+id ${username} || (echo "User ${username} not found, creating.." ; /usr/sbin/useradd -r -s /sbin/nologin -g ${groupname} ${username})
+chown -R ${username}:${groupname} "/var/log/jabberd"
+chown -R ${username}:${groupname} "/var/run/jabberd"
+chown -R ${username}:${groupname} "/var/jabberd"
+chown -R ${username}:${groupname} "/etc/jabberd"

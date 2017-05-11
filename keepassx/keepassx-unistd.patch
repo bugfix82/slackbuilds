@@ -1,0 +1,12 @@
+diff -aNur keepassx-0.4.3.orig/src/lib/random.cpp keepassx-0.4.3/src/lib/random.cpp
+--- keepassx-0.4.3.orig/src/lib/random.cpp	2015-01-20 23:51:53.917076454 +0300
++++ keepassx-0.4.3/src/lib/random.cpp	2015-01-20 23:52:09.865076833 +0300
+@@ -19,7 +19,7 @@
+  ***************************************************************************/
+ 
+ #include "random.h"
+-
++#include <unistd.h>
+ 
+ #if defined(Q_WS_X11) || defined(Q_WS_MAC)
+ 	#include <QFile>

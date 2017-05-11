@@ -1,0 +1,18 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|' on
+# the right side marks the last column you can put a character in.  You must make
+# exactly 11 lines for the formatting to be correct.  It's also customary to
+# leave one space after the ':'.
+
+         |-----handy-ruler------------------------------------------------------|
+spectrum2: spectrum2
+spectrum2:
+spectrum2: Spectrum 2 is an XMPP transport/gateway and also simple server. It
+spectrum2: allows XMPP users to communicate with their friends who are using one
+spectrum2: of the supported networks. It supports a wide range of different
+spectrum2: networks such as ICQ, XMPP (Jabber, GTalk), AIM, MSN, Facebook,
+spectrum2: Twitter, or IRC. Spectrum 2 is written in C++ and uses the Swiften
+spectrum2: library and various different libraries for “legacy networks”.
+spectrum2: Spectrum 2 is open source and released under the GNU GPL.
+spectrum2: 

@@ -1,0 +1,89 @@
+#!/bin/sh
+
+name="PlexMediaServer"
+version="1.5.5.3634-995f1dead"
+filename="${name}-${version}-x64-UnRAID.txz"
+arch="${ARCH:-$(uname -m)}"
+rev="4"
+hostgcc=$(gcc -dumpmachine)
+cwd=$(pwd)
+tmpdir="/tmp"
+pkgdir="${tmpdir}/${name}-${version}-install"
+
+boldecho() {
+	echo -e "\n\033[1m$1\033[0m" && sleep 1
+}
+
+do_exit() {
+	boldecho "Exiting due error or interrupt"
+	exit 1
+}
+
+do_unpack(){
+	test -f ${cwd}/${filename} || return 1
+	boldecho "Unpacking"
+	xzcat "${cwd}/${filename}" | tar xvf - || return 1
+	return 0
+}
+
+do_install() {
+	boldecho "Installing"
+	mkdir -pv ${pkgdir}/etc/plexmediaserver
+	cp -v boot/config/plugins/plexmediaserver/exportsettings ${pkgdir}/etc/plexmediaserver/
+	cp -vr etc install usr ${pkgdir}/
+	/usr/bin/sed \
+		-e 's|CONFIG_FILE=/boot/config/plugins/plexmediaserver/exportsettings|CONFIG_FILE=/etc/plexmediaserver/exportsettings|g' \
+		-e 's|RUNAS:users|RUNAS:daemon|g' -i ${pkgdir}/etc/rc.d/rc.plexmediaserver
+	/usr/bin/sed -e 's|/boot/config/plugins/plexmediaserver/settings.ini|/etc/plexmediaserver/settings.ini|g' -i ${pkgdir}/etc/plexmediaserver/exportsettings
+	/usr/bin/sed \
+		-e 's|CONFIG_FILE="/boot/config/plugins/plexmediaserver/settings.ini"|CONFIG_FILE="/etc/plexmediaserver/settings.ini"|g' \
+		-e '/cp \/etc\/passwd \/etc\/shadow \/boot\/config/d' \
+		-e 's|/boot/config/plugins/plexmediaserver/plex_settings.cfg|/etc/plexmediaserver/plex_settings.cfg|g' \
+		-e 's|/boot/config/plugins/plexmediaserver/plex_default.cfg|/etc/plexmediaserver/plex_default.cfg|g' -i ${pkgdir}/install/doinst.sh
+	/usr/bin/sed -e 's|/boot/config/plugins/plexmediaserver/settings.ini|/etc/plexmediaserver/settings.ini|g' -i ${pkgdir}/usr/local/emhttp/plugins/plexmediaserver/plexmediaserver.page
+	/usr/bin/sed -e 's|/boot/config/plugins/plexmediaserver/settings.ini|/etc/plexmediaserver/settings.ini|g' -i ${pkgdir}/usr/local/emhttp/plugins/plexmediaserver/plexmediaserverctl.php
+	/usr/bin/sed -e 's|useradd -r -g users -s /sbin/nologin unraid-plex|/usr/sbin/useradd -r -g daemon -s /sbin/nologin -d /var/lib/plexmediaserver -m unraid-plex |g' -i ${pkgdir}/install/doinst.sh
+	/usr/bin/sed -e 's|/tmp/Library|/var/lib/plexmediaserver|g' -i ${pkgdir}/install/doinst.sh
+	return 0
+}
+
+do_strip(){
+	boldecho "Stripping"
+	find "${pkgdir}" | xargs file | grep "executable" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
+	find "${pkgdir}" | xargs file | grep "shared object" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
+	return 0
+}
+
+do_clean() {
+	rm -rf "${pkgdir}" "${tmpdir}/${name}-${version}"
+}
+
+boldecho "${name}.SlackBuild for ${filename}"
+
+if [ ${UID} != 0 ]; then
+	boldecho "You must be root to use this script" && exit 1
+fi
+
+if [ -d "${tmpdir}/${name}-${version}" ]; then
+	boldecho "Found previous build directory. Removing."
+	rm -rf "${tmpdir}/${name}-${version}"
+fi
+
+if [ ! -r "${filename}" ]; then
+	boldecho "Cannot locate ${filename}" || do_exit
+fi
+
+trap 'do_clean; do_exit' TERM INT
+
+mkdir -pv ${tmpdir}/${name}-${version} || do_exit
+cd ${tmpdir}/${name}-${version} || do_exit
+do_unpack || do_exit
+chown -R root:root . || do_exit
+do_install || do_exit
+do_strip
+cd "${pkgdir}" || do_exit
+/sbin/makepkg -l y -c n "${tmpdir}/${name}-`echo ${version} | tr -d '-'`-${arch}-${rev}.txz" || do_exit
+cd "${cwd}" || do_exit
+do_clean
+boldecho "Done"
+exit 0

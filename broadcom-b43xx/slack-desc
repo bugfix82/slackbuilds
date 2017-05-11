@@ -1,0 +1,15 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|' on
+# the right side marks the last column you can put a character in.  You must make
+# exactly 11 lines for the formatting to be correct.  It's also customary to
+# leave one space after the ':'.
+
+              |-----handy-ruler------------------------------------------------------|
+broadcom-b43xx: broadcom-b43xx
+broadcom-b43xx:
+broadcom-b43xx: These package contain Broadcom IEEE 802.11a/b/g/n hybrid Linux®
+broadcom-b43xx: device driver for use with Broadcom's BCM4311-, BCM4312-, BCM4313-,
+broadcom-b43xx: BCM4321-, BCM4322-, BCM43224-, and BCM43225-, BCM43227- and
+broadcom-b43xx: BCM43228-based hardware.
+broadcom-b43xx: 

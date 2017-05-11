@@ -1,0 +1,17 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|' on
+# the right side marks the last column you can put a character in.  You must make
+# exactly 11 lines for the formatting to be correct.  It's also customary to
+# leave one space after the ':'.
+
+        |-----handy-ruler------------------------------------------------------|
+inkscape: inkscape
+inkscape:
+inkscape: An Open Source vector graphics editor, with capabilities similar to
+inkscape: Illustrator, CorelDraw, or Xara X, using the W3C standard Scalable
+inkscape: Vector Graphics (SVG) file format. Inkscape supports many advanced
+inkscape: SVG features (markers, clones, alpha blending, etc.) and great care is
+inkscape: taken in designing a streamlined interface. It is very easy to edit
+inkscape: nodes, perform complex path operations, trace bitmaps and much more.
+inkscape:

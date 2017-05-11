@@ -1,0 +1,9 @@
+#network_interface=eth0                         # Self-discovers if commented (at times necessary to set)
+media_dir=A,/home/user/Music                    # Mounted Media_Collection drive directories
+media_dir=P,/home/user/Pictures                 # Use A, P, and V to restrict media 'type' in directory
+media_dir=V,/home/user/Videos
+friendly_name=Media Server                      # Optional
+inotify=yes                                     # 'no' for less resources, restart required for new media
+presentation_url=http://www.mylan/index.php     # or use your device static IP http://192.168.0.14:8200/
+log_dir=/var/log/minidlna
+db_dir=/var/cache/minidlna

@@ -1,0 +1,43 @@
+#!/bin/sh
+# Start/stop/restart hostapd.
+
+# Start hostapd:
+hostapd_start() {
+	if [ -x /usr/sbin/hostapd ]
+	then
+		echo "Starting hostapd:  /usr/sbin/hostapd -B -P /var/run/hostapd.pid /etc/hostapd/hostapd.conf"
+		/usr/sbin/hostapd -B -P /var/run/hostapd.pid /etc/hostapd/hostapd.conf
+	fi
+}
+
+# Stop hostapd:
+hostapd_stop() {
+	if [ -r /var/run/hostapd.pid ]
+	then
+		kill $(cat /var/run/hostapd.pid)
+	else
+		killall hostapd
+	fi
+}
+
+# Restart hostapd:
+hostapd_restart() {
+	hostapd_stop
+	sleep 1
+	hostapd_start
+}
+
+case "$1" in
+'start')
+	hostapd_start
+	;;
+'stop')
+	hostapd_stop
+	;;
+'restart')
+	hostapd_restart
+	;;
+*)
+	echo "usage $0 start|stop|restart"
+esac
+

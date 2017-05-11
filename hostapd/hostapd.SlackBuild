@@ -1,0 +1,177 @@
+#!/bin/sh
+
+name="hostapd"
+version="2.5"
+filename="${name}-${version}.tar.gz"
+arch="${ARCH:-$(uname -m)}"
+rev="2"
+hostgcc=$(gcc -dumpmachine)
+cwd=$(pwd)
+tmpdir="/tmp"
+pkgdir="${tmpdir}/${name}-${version}-install"
+
+case "${arch}" in
+  i486|i686) SLKCFLAGS="-O2 -march=i486 -mtune=i686"
+             SLKLDFLAGS="-lm"; LIBDIRSUFFIX=""
+             ;;
+  x86_64)    SLKCFLAGS="-O2 -fPIC"
+             SLKLDFLAGS="-L/usr/lib64 -lm"; LIBDIRSUFFIX="64"
+             ;;
+  athlon-xp) SLKCFLAGS="-march=athlon-xp -O3 -pipe -fomit-frame-pointer"
+             SLKLDFLAGS="-lm"; LIBDIRSUFFIX=""
+             ;;
+esac
+
+boldecho() {
+	echo -e "\n\033[1m$1\033[0m" && sleep 1
+}
+
+do_exit() {
+	boldecho "Exiting due error or interrupt"
+	exit 1
+}
+
+do_unpack(){
+	test -f ${cwd}/${filename} || return 1
+	boldecho "Unpacking"
+	tar xvfz "${cwd}/${filename}" || return 1
+	return 0
+}
+
+do_configure() {
+	boldecho "Running configure"
+	cat > .config << EOC
+CONFIG_DRIVER_HOSTAP=y
+CONFIG_DRIVER_NL80211=y
+CONFIG_DRIVER_WIRED=y
+CONFIG_IAPP=y
+CONFIG_RSN_PREAUTH=y
+CONFIG_PEERKEY=y
+CONFIG_EAP=y
+CONFIG_EAP_MD5=y
+CONFIG_EAP_TLS=y
+CONFIG_EAP_MSCHAPV2=y
+CONFIG_EAP_PEAP=y
+CONFIG_EAP_GTC=y
+CONFIG_EAP_TTLS=y
+CONFIG_PKCS12=y
+CONFIG_IPV6=n
+CONFIG_NO_ACCOUNTING=y
+CONFIG_NO_RADIUS=y
+CONFIG_NO_VLAN=y
+CONFIG_DRIVER_NL80211=y
+CONFIG_IEEE80211AC=y
+CONFIG_IEEE80211N=y
+CONFIG_IEEE80211W=y
+CONFIG_WPS_NFC=y
+CONFIG_TLS=openssl
+CONFIG_TLSV11=y
+CONFIG_TLSV12=y
+CONFIG_HS20=y
+CONFIG_ACS=y
+EOC
+	return 0
+}
+
+do_make() {
+	boldecho "Running make"
+	LDFLAGS="$SLKLDFLAGS" \
+	CFLAGS="$SLKCFLAGS" \
+	CXXFLAGS="$SLKCFLAGS" \
+	make -j 2 || return 1
+	return 0
+}
+
+do_install() {
+	boldecho "Installing"
+	LDFLAGS="$SLKLDFLAGS" \
+	CFLAGS="$SLKCFLAGS" \
+	CXXFLAGS="$SLKCFLAGS" \
+	mkdir -p ${pkgdir}/usr/sbin
+	mkdir -p ${pkgdir}/usr/share/man/man{1,8}
+	mkdir -p ${pkgdir}/etc/hostapd
+	mkdir -p ${pkgdir}/etc/rc.d
+	cp -v hostapd hostapd_cli ${pkgdir}/usr/sbin/
+	cp -v hostapd.8 ${pkgdir}/usr/share/man/man8/
+	cp -v hostapd_cli.1 ${pkgdir}/usr/share/man/man1/
+	cp -v hostapd.conf ${pkgdir}/etc/hostapd/hostapd.conf.new
+	cp -v ${cwd}/rc.hostapd ${pkgdir}/etc/rc.d/
+	return 0
+}
+
+do_man() {
+	boldecho "Processing man pages"
+	for i in {1..9} n m
+	do
+		rm -vf ${pkgdir}/usr/share/man/man${i}/*.gz
+		( test -d ${pkgdir}/usr/share/man/man${i} && cd ${pkgdir}/usr/share/man/man${i} && gzip * )
+	done
+	return 0
+}
+
+do_doc() {
+	boldecho "Processing docs"
+	mkdir -p ${pkgdir}/usr/doc/${name}-${version}
+	cp -a README ${pkgdir}/usr/doc/${name}-${version}
+	cp -v hostapd.[a-z]* ${pkgdir}/usr/doc/${name}-${version}
+	cp ${cwd}/${name}.SlackBuild ${pkgdir}/usr/doc/${name}-${version}/${name}.SlackBuild
+	rm -f ${pkgdir}/usr/doc/${name}-${version}/Makefile*
+}
+
+do_strip(){
+	boldecho "Stripping"
+	find "${pkgdir}" | xargs file | grep "executable" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
+	find "${pkgdir}" | xargs file | grep "shared object" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
+	return 0
+}
+
+do_doinst() {
+	cat ${cwd}/doinst.sh.in > "${pkgdir}/install/doinst.sh" 
+	chmod 700 "${pkgdir}/install/doinst.sh"
+}
+
+do_descr() {
+	boldecho "Making description"
+	mkdir -p "${pkgdir}/install"
+	cat ${cwd}/slack-desc > ${pkgdir}/install/slack-desc
+}
+
+do_clean() {
+	rm -rf "${pkgdir}" "${tmpdir}/${name}-${version}"
+}
+
+boldecho "${name}.SlackBuild for ${filename}"
+
+if [ ${UID} != 0 ]; then
+	boldecho "You must be root to use this script" && exit 1
+fi
+
+if [ -d "${tmpdir}/${name}-${version}" ]; then
+	boldecho "Found previous build directory. Removing."
+	rm -rf "${tmpdir}/${name}-${version}"
+fi
+
+if [ ! -r "${filename}" ]; then
+	boldecho "Cannot locate ${filename}" || do_exit
+fi
+
+trap 'do_clean; do_exit' TERM INT
+
+cd "${tmpdir}" || do_exit
+do_unpack || do_exit
+cd "${name}-${version}/${name}" || do_exit
+chown -R root:root . || do_exit
+do_configure
+do_make || do_exit
+do_install || do_exit
+do_man
+do_doc
+do_strip
+do_descr
+do_doinst
+cd "${pkgdir}" || do_exit
+/sbin/makepkg -l y -c n "${tmpdir}/${name}-`echo ${version} | tr -d '-'`-${arch}-${rev}.txz" || do_exit
+cd "${cwd}" || do_exit
+do_clean
+boldecho "Done"
+exit 0

@@ -1,0 +1,11 @@
+diff -aNur minidlna-1.1.5.orig/libav.h minidlna-1.1.5/libav.h
+--- minidlna-1.1.5.orig/libav.h	2015-09-10 22:24:09.000000000 +0300
++++ minidlna-1.1.5/libav.h	2016-02-28 20:37:36.490770380 +0300
+@@ -101,6 +101,7 @@
+ #define AV_CODEC_ID_WMAV1 CODEC_ID_WMAV1
+ #define AV_CODEC_ID_WMAV2 CODEC_ID_WMAV2
+ #define AV_CODEC_ID_WMV3 CODEC_ID_WMV3
++#define AV_CODEC_ID_MJPEG CODEC_ID_MJPEG
+ #endif
+ 
+ #if LIBAVUTIL_VERSION_INT < ((50<<16)+(13<<8)+0)

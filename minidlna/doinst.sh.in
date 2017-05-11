@@ -1,0 +1,22 @@
+config() {
+	NEW=$1
+	OLD="`dirname $NEW`/`basename $NEW .new`"
+	if [ ! -r $OLD ]
+	then
+		mv $NEW $OLD
+	elif [ "`cat $OLD | md5sum`" = "`cat $NEW | md5sum`" ]
+	then
+		rm $NEW
+	fi
+}
+
+config etc/rc.d/rc.minidlna.new
+
+username="minidlna"
+groupname="daemon"
+
+id ${username} > /dev/null 2>&1 || (echo "User ${username} not found, creating.." ; /usr/sbin/useradd -r -s /sbin/nologin -g ${groupname} ${username})
+/usr/bin/chown -R ${username}:${groupname} "/var/run/minidlna"
+/usr/bin/chown -R ${username}:${groupname} "/var/log/minidlna"
+/usr/bin/chown -R ${username}:${groupname} "/var/cache/minidlna"
+

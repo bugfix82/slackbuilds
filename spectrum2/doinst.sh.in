@@ -1,0 +1,25 @@
+USERNAME=spectrum
+GROUPNAME=spectrum
+
+config() {
+        NEW=$1
+        OLD="`dirname $NEW`/`basename $NEW .new`"
+        if [ ! -r $OLD ]
+        then
+                mv $NEW $OLD
+        elif [ "`cat $OLD | md5sum`" = "`cat $NEW | md5sum`" ]
+        then
+                rm $NEW
+        fi
+}
+
+config etc/spectrum2/backend-logging.cfg.new
+config etc/spectrum2/logging.cfg.new
+config etc/spectrum2/transports/spectrum.cfg.example.new
+config etc/spectrum2/transports/spectrum_server_mode.cfg.example.new
+config etc/spectrum2/spectrum_manager.cfg.new
+
+getent group ${GROUPNAME} > /dev/null 2>&1 || (echo "Group ${GROUPNAME} not found, creating.."; /usr/sbin/groupadd -r ${GROUPNAME})
+id ${USERNAME} > /dev/null 2>&1 || (echo "User ${USERNAME} not found, creating.." ; /usr/sbin/useradd -r -s /sbin/nologin -g ${GROUPNAME} ${USERNAME})
+
+/usr/bin/chown -R ${USERNAME}:${GROUPNAME} "/etc/spectrum2"

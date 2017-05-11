@@ -1,0 +1,31 @@
+config() {
+	NEW=$1
+	OLD="`dirname $NEW`/`basename $NEW .new`"
+	if [ ! -r $OLD ]
+	then
+		mv $NEW $OLD
+	elif [ "`cat $OLD | md5sum`" = "`cat $NEW | md5sum`" ]
+	then
+		rm $NEW
+	fi
+}
+
+[ -f etc/bacula/bacula-sd.conf.new ] && config etc/bacula/bacula-sd.conf.new
+[ -f etc/bacula/bconsole.conf.new ] && config etc/bacula/bconsole.conf.new
+[ -f etc/bacula/bacula-dir.conf.new ] && config etc/bacula/bacula-dir.conf.new
+[ -f etc/bacula/bacula-fd.conf.new ] && config etc/bacula/bacula-fd.conf.new
+
+USERNAME=bacula
+GROUPNAME=bacula
+
+/usr/bin/getent group ${GROUPNAME} > /dev/unll 2>&1 || (echo "Group ${GROUPNAME} not found, creating.."; /usr/sbin/groupadd -r ${GROUPNAME})
+/usr/bin/id ${USERNAME} > /dev/null 2>&1 || (echo "User ${USERNAME} not found, creating.." ; /usr/sbin/useradd -r -s /sbin/nologin -g ${GROUPNAME} ${USERNAME})
+
+# fix owner for directories
+/usr/bin/chown -v ${USERNAME}:${GROUPNAME} /var/lib/bacula/{,archive,work,restored}
+
+# and fix owner:group for necessary files
+for i in /usr/share/bacula/scripts/{delete_catalog_backup,make_catalog_backup,make_catalog_backup.pl,query.sql} /usr/sbin/dbcheck /etc/bacula/bacula-dir.conf
+do
+	[ -f ${i} ] && /usr/bin/chown -v root:${GROUPNAME} ${i}
+done

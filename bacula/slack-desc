@@ -1,0 +1,18 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|' on
+# the right side marks the last column you can put a character in.  You must make
+# exactly 11 lines for the formatting to be correct.  It's also customary to
+# leave one space after the ':'.
+
+      |-----handy-ruler------------------------------------------------------|
+bacula: bacula
+bacula:
+bacula: Bacula is a set of Open Source, computer programs that permit you to
+bacula: manage backup, recovery, and verification of computer data across a
+bacula: network of computers of different kinds. Bacula is relatively easy to
+bacula: use and very efficient, while offering many advanced storage
+bacula: management features that make it easy to find and recover lost or
+bacula: damaged files. In technical terms, it is an Open Source, network
+bacula: based backup program. 
+bacula:

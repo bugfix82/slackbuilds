@@ -1,0 +1,121 @@
+#!/bin/sh
+
+#
+# To build this driver, you must install kernel sources and run 'make scripts' in kernel tree
+#
+
+name="broadcom-b43xx"
+version="6.30.223.271"
+filename="hybrid-v35_64-nodebug-pcoem-6_30_223_271.tar.gz"		# for 64bit system
+#filename="hybrid-v35-nodebug-pcoem-6_30_223_248.tar.gz"		# for 32bit system
+arch="${ARCH:-`uname -m`}"
+rev="1"
+hostgcc=`gcc -dumpmachine`
+cwd=`pwd`
+tmpdir="/tmp"
+pkgdir="${tmpdir}/${name}-${version}-install"
+
+case "${arch}" in
+  i486|i686)	SLKCFLAGS="-O2 -march=i486 -mtune=i686"
+		SLKLDFLAGS=""; LIBDIRSUFFIX=""
+		;;
+  x86_64)	SLKCFLAGS="-O2 -fPIC"
+		SLKLDFLAGS="-L/usr/lib64"; LIBDIRSUFFIX="64"
+		;;
+  athlon-xp)	SLKCFLAGS="-march=athlon-xp -O3 -pipe -fomit-frame-pointer"
+		SLKLDFLAGS=""; LIBDIRSUFFIX=""
+		;;
+esac
+
+boldecho() {
+	echo -e "\n\033[1m$1\033[0m" && sleep 1
+}
+
+do_exit() {
+	boldecho "Exiting due error or interrupt"
+	exit 1
+}
+
+do_unpack(){
+	test -f ${cwd}/${filename} || return 1
+	boldecho "Unpacking"
+	tar xvfz "${cwd}/${filename}" || return 1
+	return 0
+}
+
+do_make() {
+	boldecho "Running make"
+	LDFLAGS="$SLKLDFLAGS" \
+	CFLAGS="$SLKCFLAGS" \
+	CXXFLAGS="$SLKCFLAGS" \
+	make -j 2 || return 1
+	return 0
+}
+
+do_install() {
+	boldecho "Installing"
+	mkdir -pv ${pkgdir}/lib/modules/`uname -r`/kernel/drivers/net/wireless
+	cp -v wl.ko ${pkgdir}/lib/modules/`uname -r`/kernel/drivers/net/wireless/wl.ko
+	mkdir -pv ${pkgdir}/etc/modprobe.d
+	cp -v ${cwd}/wl.conf ${pkgdir}/etc/modprobe.d/
+	return 0
+}
+
+do_doc() {
+	boldecho "Processing docs"
+	mkdir -pv ${pkgdir}/usr/doc/${name}-${version}
+	cp -a lib/LICENSE.txt ${pkgdir}/usr/doc/${name}-${version}
+	cp ${cwd}/${name}.SlackBuild ${pkgdir}/usr/doc/${name}-${version}/${name}.SlackBuild
+}
+
+
+do_descr() {
+	boldecho "Making description"
+	mkdir -p "${pkgdir}/install"
+	cat ${cwd}/slack-desc > ${pkgdir}/install/slack-desc
+}
+
+do_doinst() {
+	cat ${cwd}/doinst.sh.in > "${pkgdir}/install/doinst.sh" 
+	chmod 700 "${pkgdir}/install/doinst.sh"
+}
+
+do_clean() {
+	rm -rf "${pkgdir}" "${tmpdir}/wl"
+}
+
+boldecho "${name}.SlackBuild for ${filename}"
+
+if [ ${UID} != 0 ]
+then
+	boldecho "You must be root to use this script" && do_exit
+fi
+
+if [ -d "${tmpdir}/wl" ]
+then
+	boldecho "Found previous build directory. Removing."
+	rm -rf "${tmpdir}/wl"
+fi
+
+if [ ! -r "${filename}" ]
+then
+	boldecho "Cannot locate ${filename}" || do_exit
+fi
+
+trap 'do_clean; do_exit' TERM INT
+
+cd "${tmpdir}" || do_exit
+mkdir wl
+cd wl
+do_unpack || do_exit
+chown -R root:root . || do_exit
+do_make || do_exit
+do_install || do_exit
+do_doc
+do_descr
+cd "${pkgdir}" || do_exit
+/sbin/makepkg -l y -c n "${tmpdir}/${name}-`echo ${version} | tr -d '-'`-${arch}-${rev}.txz" || do_exit
+cd "${cwd}" || do_exit
+do_clean
+boldecho "Done"
+exit 0

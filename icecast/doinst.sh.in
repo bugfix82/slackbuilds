@@ -1,0 +1,5 @@
+username=icecast
+
+id ${username} > /dev/null 2>&1 || (echo "User ${username} not found, creating.." ; /usr/sbin/useradd -r -s /sbin/nologin -g daemon ${username})
+
+/usr/bin/chown -Rv ${username}:daemon /var/run/icecast /var/log/icecast

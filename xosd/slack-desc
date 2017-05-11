@@ -1,0 +1,15 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|' on
+# the right side marks the last column you can put a character in.  You must make
+# exactly 11 lines for the formatting to be correct.  It's also customary to
+# leave one space after the ':'.
+
+    |-----handy-ruler------------------------------------------------------|
+xosd: xosd
+xosd:
+xosd: XOSD is a simple library to display shaped text on your X display,
+xosd: like a TV on-screen display. It also contains an XMMS plugin and a
+xosd: simple example program that can display system logs overlaid on
+xosd: you desktop.
+xosd:

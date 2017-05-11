@@ -1,0 +1,29 @@
+#!/bin/bash
+
+start() {
+	echo "Starting jabberd: /usr/bin/jabberd"
+	/usr/bin/sudo -u jabberd /usr/bin/jabberd -c /etc/jabberd/jabberd.cfg &
+}
+
+stop() {
+	echo "Stopping jabberd"
+	kill `cat /var/jabberd/c2s.pid`
+	kill `cat /var/jabberd/router.pid`
+	kill `cat /var/jabberd/s2s.pid`
+	kill `cat /var/jabberd/sm.pid`
+}
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        restart)
+                stop
+                start
+                ;;
+        *)
+                echo "Usage: $0 {start|stop|restart}"
+esac

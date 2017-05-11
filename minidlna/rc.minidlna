@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# minidlna rc script
+
+exec="/usr/sbin/minidlnad"
+prog=$(basename "$exec")
+CONFIG_PATH="/etc/minidlna/minidlna.conf"
+RUNAS="minidlna"
+
+restart() {
+    stop
+    start
+}
+
+start() {
+    echo -n 'Starting minidlnad...'
+    /bin/su - ${RUNAS} -c "$exec -f $CONFIG_PATH"
+}
+
+stop() {
+    echo -n 'Stopping minidlnad...'
+    kill `cat /var/run/minidlna/minidlna.pid`
+}
+
+case $1 in
+    restart)
+        restart
+        ;;
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 2
+        ;;
+esac
+
+exit $?
+

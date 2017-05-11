@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|' on
+# the right side marks the last column you can put a character in.  You must make
+# exactly 11 lines for the formatting to be correct.  It's also customary to
+# leave one space after the ':'.
+
+                 |-----handy-ruler------------------------------------------------------|
+freeradius-server: freeradius-server
+freeradius-server:
+freeradius-server: FreeRADIUS includes a RADIUS server, a BSD licensed client library,
+freeradius-server: a PAM library, and an Apache module. In most cases, the word
+freeradius-server: FreeRADIUS refers to the RADIUS server.
+freeradius-server:
+freeradius-server: FreeRADIUS is the most widely deployed RADIUS server in the world.
+freeradius-server: It is the basis for multiple commercial offerings. It supplies the
+freeradius-server: AAA needs of many Fortune-500 companies and Tier 1 ISPs.
+freeradius-server: It is also widely used for Enterprise Wi-Fi and IEEE 802.1X network
+freeradius-server: security, particularly in the academic community, including eduroam.
