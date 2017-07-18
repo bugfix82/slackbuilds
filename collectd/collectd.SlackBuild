@@ -4,7 +4,7 @@ name="collectd"
 version="5.7.2"
 filename="${name}-${version}.tar.bz2"
 arch="${ARCH:-`uname -m`}"
-rev="1"
+rev="2"
 hostgcc=$(gcc -dumpmachine)
 cwd=`pwd`
 tmpdir="/tmp"
@@ -71,6 +71,7 @@ do_install() {
 	mv -v ${pkgdir}/etc/collectd.conf ${pkgdir}/etc/collectd.conf.new
 	mkdir -pv ${pkgdir}/etc/rc.d
 	cat contrib/redhat/init.d-collectd > ${pkgdir}/etc/rc.d/rc.collectd.new
+	/bin/sed -e 's| --user \"${RUNAS:-root}\"||g' ${pkgdir}/etc/rc.d/rc.collectd.new
 	return 0
 }
 
