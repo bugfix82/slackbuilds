@@ -71,7 +71,7 @@ do_install() {
 	mv -v ${pkgdir}/etc/collectd.conf ${pkgdir}/etc/collectd.conf.new
 	mkdir -pv ${pkgdir}/etc/rc.d
 	cat contrib/redhat/init.d-collectd > ${pkgdir}/etc/rc.d/rc.collectd.new
-	/bin/sed -e 's| --user \"${RUNAS:-root}\"||g' ${pkgdir}/etc/rc.d/rc.collectd.new
+	/bin/sed -e 's| --user \"${RUNAS:-root}\"||g' -i ${pkgdir}/etc/rc.d/rc.collectd.new
 	return 0
 }
 
